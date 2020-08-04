@@ -1,0 +1,5 @@
+class MessageConfiguration {
+  void setPublicK(){
+
+  }
+}
