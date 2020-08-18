@@ -1,9 +1,10 @@
 import 'package:crypto_msn_app/ChatScreen/ChatScreen.dart';
+import 'package:crypto_msn_app/Database/DatabaseConnection.dart';
+import 'package:crypto_msn_app/Database/Message.dart';
 import 'package:crypto_msn_app/FirstEntry/View/FirstScreen.dart';
 import 'package:crypto_msn_app/NewChat/View/NewChatScreen.dart';
 import 'package:crypto_msn_app/PushNotifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class ChatListScreen extends StatefulWidget{
@@ -19,6 +20,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
     super.initState();
     PushNotificationsManager().init(context);
     PushNotificationsManager().updateServerToken();
+  }
+  final DatabaseConnection database = DatabaseConnection();
+
+  Future<List<ChatList>> getDB() async{
+    await database.init();
+    return database.getChats();
   }
   @override
   Widget build(BuildContext context) {
@@ -40,12 +47,22 @@ class _ChatListScreenState extends State<ChatListScreen> {
           )
         ],
       ),
-      body: ListView.builder(itemBuilder: (BuildContext context, int index) {
-        return ChatItem();
-      },
-        padding: EdgeInsets.all(0),
-        itemCount: 12,
+      body: FutureBuilder(
+        builder: (BuildContext context, AsyncSnapshot<List<ChatList>> snapshot) {
+          if(snapshot.connectionState == ConnectionState.done){
+            return ListView.builder(itemBuilder: (BuildContext context, int index) {
+              return ChatItem();
+            },
+              padding: EdgeInsets.all(0),
+              itemCount: 12,
 
+            );
+          }
+          else{
+            return Container();
+          }
+        },
+        future: getDB(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -81,8 +98,8 @@ class ChatItem extends StatelessWidget{
                          children: [
                            Row(
                              children: [
-                               Text("+52 1 56 1138 3956", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),),
-                               Text("11:11 a.m.", style: TextStyle(color: Colors.grey))
+                               Text("+52 1 56 1138 3956", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Theme.of(context).textTheme.bodyText1.color),),
+                               Text("11:11 a.m.", style: TextStyle(color: Theme.of(context).textTheme.bodyText2.color))
                              ],
                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                            ),
@@ -97,7 +114,7 @@ class ChatItem extends StatelessWidget{
                                      Container(
                                        child: Flexible(
                                          child: Text("uwuwuwuwuwuwuwuwuwuwuwuwuwuwuywywwuwuuwuwuwuwuuwuwuw",
-                                             style: TextStyle(fontSize: 15, color: Colors.grey),
+                                             style: TextStyle(fontSize: 15, color: Theme.of(context).textTheme.bodyText2.color, fontWeight: FontWeight.w400),
                                              overflow: TextOverflow.ellipsis,
                                            maxLines: 1,
                                          ),
@@ -108,7 +125,7 @@ class ChatItem extends StatelessWidget{
                                  ),
                                ),
                                Padding(
-                                 child: Icon(Icons.volume_off, color: Colors.grey,),
+                                 child: Icon(Icons.volume_off, color: Theme.of(context).textTheme.bodyText2.color,),
                                  padding: EdgeInsets.only(right: 10),
                                )
                              ],

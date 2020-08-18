@@ -1,8 +1,6 @@
 import 'package:crypto_msn_app/ChatsList/ChatsListScreen.dart';
 import 'package:crypto_msn_app/FirstEntry/Bloc/AuthViewModel.dart';
 import 'package:crypto_msn_app/FirstEntry/Bloc/Prefs.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart';
 import 'package:flutter/material.dart';
 
 class VerificationScreen extends StatefulWidget{

@@ -1,53 +1,67 @@
 import 'package:crypto_msn_app/ChatScreen/Bloc/ChatBloc.dart';
-import 'package:crypto_msn_app/ChatScreen/Model/ChatMessageModel.dart';
+import 'package:crypto_msn_app/Database/DatabaseConnection.dart';
+import 'package:crypto_msn_app/Database/Message.dart';
 import 'package:flutter/material.dart';
 
-import 'ReceivedMessage.dart';
-import 'SendMessage.dart';
+import 'Components/ReceivedMessage.dart';
+import 'Components/SendMessage.dart';
 
 
-class ChatMessages extends StatelessWidget{
-  final DefaultItems data = DefaultItems();
+class ChatMessages extends StatefulWidget{
   final ChatBloc stream;
 
   ChatMessages({Key key, this.stream}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Container(
-      child: ListView.builder(
-        reverse: true,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+  _ChatMessagesState createState() => _ChatMessagesState();
+}
 
-            children: [
-              ReceivedMessage(text: "Esta es una conversación de prueba",isInitial: true, isFinal: true),
-              SendMessage(text: "Para ver el modelo detallado de la app en construccion", isInitial: true,isFinal: true),
-              ReceivedMessage(text: "ver si sirve",isInitial: true, isFinal: true),
-              ReceivedMessage(text: "ver si sirve", isFinal: true),
-              SendMessage(text: "Y obtener un resultado definido en el chat", isInitial: true),
-              ReceivedMessage(text: "ok?",isInitial: true,isFinal: true),
-              SendMessage(text: "?", isInitial: true, ),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?",),
-              SendMessage(text: "?", isFinal: true,),
-            ],
+class _ChatMessagesState extends State<ChatMessages> {
+  final stream = ChatBloc();
+  final DatabaseConnection database = DatabaseConnection();
+  @override
+  void initState() {
+    super.initState();
+    getDB();
+  }
+
+  Future<List<Message>> getDB () async{
+    await database.init();
+    return database.getMessages();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("building");
+    // TODO: implement build
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<List<Message>> snapshot) {
+        List<Message> data = snapshot.data;
+        if(snapshot.connectionState == ConnectionState.done){
+          return Container(
+            child: ListView.builder(
+              reverse: true,
+              itemBuilder: (BuildContext context, int index) {
+                return getTypeMessage(data[index]);
+              },
+              itemCount: data.length,
+            ),
           );
-        },
-      ),
+        }
+        else{
+          return Container();
+        }
+      },
+      future: getDB(),
     );
   }
 
+  Widget getTypeMessage(Message data){
+    if(data.isSender){
+      return SendMessage(text: data.content, isInitial: data.isInitial, isFinal: data.isEnd,);
+    }
+    else{
+      return ReceivedMessage(text: data.content, isInitial: data.isInitial, isFinal: data.isEnd,);
+    }
+  }
 }

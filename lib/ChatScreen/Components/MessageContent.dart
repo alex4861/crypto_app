@@ -15,7 +15,7 @@ class MessageContent extends StatelessWidget{
           //We only want to wrap the text message with flexible widget
             child: Text(
               text,
-              style: TextStyle(fontSize: 15.4),
+              style: TextStyle(fontSize: 15.4, color: Theme.of(context).textTheme.bodyText1.color),
               textHeightBehavior: TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
               textWidthBasis: TextWidthBasis.longestLine,
             )
@@ -23,11 +23,11 @@ class MessageContent extends StatelessWidget{
         Container(
           child: Text(
             "11:11 a. m.",
-            style: TextStyle(fontSize: 12.0, color: Colors.grey),
+            style: TextStyle(fontSize: 12.0, color: Theme.of(context).textTheme.bodyText2.color),
           ),
           padding: EdgeInsets.only(left: 6, top: 6, right: 0),
         ),
-        isSend? Icon(Icons.done_all, color: Colors.grey, size: 16,):Container(width: 0,),
+        isSend? Icon(Icons.done_all, color: Colors.blue, size: 16,):Container(width: 0,),
       ],
       alignment: WrapAlignment.end,
       crossAxisAlignment: WrapCrossAlignment.end,

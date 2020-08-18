@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:crypto_msn_app/ChatScreen/Model/ChatMessageModel.dart';
 import 'package:cryptography/cryptography.dart';
+import 'package:http/http.dart' as http;
 
 class ChatBloc implements Bloc{
 
@@ -53,6 +54,16 @@ String get message => _message;
 
     _locationController.sink.add(tmessage);
   }
+
+  //TODO: get destination number to set into params
+Future<void> sendData(String message, String destination) async {
+    var body = {
+      message: message,
+    };
+    http.post(url);
+}
+static String url = "https://us-central1-msg-test-6ae6c.cloudfunctions.net/sendMessage";
+
   final _locationController2 = StreamController<ChatMessagesModel>();
 final _locationController = StreamController<String>();
 

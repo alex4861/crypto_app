@@ -1,7 +1,7 @@
   import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/services.dart';
   import 'package:http/http.dart' as http;
   import 'dart:convert' as convert;
 
@@ -17,7 +17,6 @@ class PushNotificationsManager{
     Future<void> init(BuildContext context) async {
       if (!_initialized) {
         // For iOS request permission first.
-        _showBigTextNotification();
         _firebaseMessaging.requestNotificationPermissions(
             const IosNotificationSettings(sound: true, badge: true, alert: true));
         _firebaseMessaging.onIosSettingsRegistered
@@ -30,13 +29,18 @@ class PushNotificationsManager{
         _initialized = true;
         _firebaseMessaging.configure(
           onMessage: (Map<String, dynamic> message) async {
+            if (message.containsKey('data')) {
+              // Handle data message
+              final dynamic data = message['data'];
+              print(data["user"]);
+              MethodChannel("plugin.register.Notification/notification").invokeMethod("setNotification",data);
+            }
             print("onMessage: $message");
 
           },
           onBackgroundMessage: myBackgroundMessageHandler,
           onLaunch: (Map<String, dynamic> message) async {
             print("onLaunch: $message");
-
           },
           onResume: (Map<String, dynamic> message) async {
             print("onResume: $message");
@@ -67,37 +71,20 @@ class PushNotificationsManager{
       if (message.containsKey('data')) {
         // Handle data message
         final dynamic data = message['data'];
+        print(data["user"]);
+        MethodChannel("plugin.register.Notification/notification").invokeMethod("setNotification",data);
       }
+
 
       if (message.containsKey('notification')) {
         // Handle notification message
         final dynamic notification = message['notification'];
       }
-      print("onLaunch: $message");
+      print("onBackground: $message");
 
       return Future<void>.value();
       // Or do other work.
     }
-    static Future _showBigTextNotification() async {
-      var bigTextStyleInformation = MessagingStyleInformation(
-          Person(icon: BitmapFilePathAndroidIcon("assets/images/icon1.png"), name: "isarn"),
-          htmlFormatContent: true,
-          conversationTitle: 'overridden <b>big</b> content title',
-          htmlFormatTitle: true,);
-      var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-          '0',
-          'messages',
-          'messages of app channel',
-          importance: Importance.Max,
-          priority: Priority.High,
-          visibility: NotificationVisibility.Public,
-          styleInformation: bigTextStyleInformation);
-      var initializationSettingsIOS = IOSNotificationDetails();
 
-      var platformChannelSpecifics =
-      new NotificationDetails(androidPlatformChannelSpecifics, initializationSettingsIOS);
-      await FlutterLocalNotificationsPlugin().show(
-          0, 'big text title', 'silent body', platformChannelSpecifics);
-    }
 
 }

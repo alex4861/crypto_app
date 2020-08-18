@@ -1,4 +1,4 @@
-import 'package:crypto_msn_app/ChatScreen/MessageContent.dart';
+import 'package:crypto_msn_app/ChatScreen/Components/MessageContent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -27,7 +27,7 @@ class SendMessage extends StatelessWidget{
                   ),
                   elevation: 0.5,
                   shape: isInitial ? _TrianglePath(): RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(6))),
-                  color: Theme.of(context).secondaryHeaderColor,
+                  color: Theme.of(context).cardColor,
                 ),
                 padding: EdgeInsets.only(right: 10),
               ),
