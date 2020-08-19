@@ -2,6 +2,8 @@ import 'dart:core';
 
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
+
 class Message {
   final String id;
   final String content;
@@ -15,7 +17,19 @@ class Message {
   final bool isReceived;
   final media;
 
-  Message({this.id, this.content, this.date, this.timestamp, this.isSender, this.isInitial, this.isEnd, this.isSend, this.isSee, this.isReceived, this.media});
+  Message({
+    @required this.id,
+    @required this.content,
+    @required this.date,
+    @required this.timestamp,
+    @required this.isSender,
+    @required this.isInitial,
+    @required this.isEnd,
+    @required this.isSend,
+    @required this.isSee,
+    @required this.isReceived,
+    @required this.media
+  });
 
   Map<String, dynamic> toMap(){
     return{
@@ -39,6 +53,7 @@ class ChatList {
   final String id;
   final Image thumbnail;
   final String name;
+  final String number;
   final String lastMessage;
   final bool isSend;
   final bool isSee;
@@ -47,7 +62,7 @@ class ChatList {
   final bool pendingMessages;
   final bool isSound;
 
-  ChatList({this.id, this.thumbnail, this.name, this.lastMessage, this.isSend, this.isSee, this.isReceived, this.badge, this.pendingMessages, this.isSound});
+  ChatList({this.id, this.thumbnail, this.name, this.number, this.lastMessage, this.isSend, this.isSee, this.isReceived, this.badge, this.pendingMessages, this.isSound});
 
 
   Map<String, dynamic> toMap(){

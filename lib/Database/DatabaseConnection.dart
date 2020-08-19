@@ -11,6 +11,7 @@ class DatabaseConnection{
           "id INTEGER PRIMARY KEY, "
           "thumbnail BLOB, "
           "name TEXT, "
+          "number TEXT"
           "lastMessage TEXT, "
           "isSend INTEGER, "
           "isSee INTEGER, "
@@ -32,7 +33,41 @@ class DatabaseConnection{
     );
   }
 
-  void insertMessage(String text) async{
+  void insertMessage(String text, String chat, bool isSender) async{
+    final db = await _database;
+    final chatMessages  = Message(
+      isSender: isSender,
+      isReceived: false,
+      isInitial: true,
+      id: DateTime.now().toIso8601String(),
+      isEnd: true,
+      media: null,
+      isSee: false,
+      timestamp: DateTime.now().toIso8601String(),
+      content: text,
+      isSend: false,
+      date: DateTime.now(),
+    );
+    db.insert(chat, chatMessages.toMap(), conflictAlgorithm: ConflictAlgorithm.replace)
+  }
+
+  void createChat(String number) async {
+    final db = await _database;
+    final name = "$number"+"Chat";
+    db.execute(
+      "CREATE TABLE [IF NOT EXISTS] $name("
+          "id INTEGER PRIMARY KEY, "
+          "content TEXT, date TEXT, "
+          "timestamp TEXT, "
+          "isSender INTEGER, "
+          "isInitial INTEGER, "
+          "isEnd INTEGER, "
+          "isSend INTEGER, "
+          "isSee INTEGER, "
+          "isReceived INTEGER, "
+          "media BLOB"
+          ")",
+    );
   }
 
   Future<List<Message>> getMessages() async{
@@ -66,6 +101,7 @@ class DatabaseConnection{
         id: maps[i]['id'],
         thumbnail: maps[i]['thumbnail'],
         name: maps[i]['name'],
+        number: maps[i]['number'],
         lastMessage: maps[i]['lastMessage'],
         isSend: maps[i]['isSend'],
         isSee: maps[i]['isSee'],
